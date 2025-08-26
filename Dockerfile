@@ -16,18 +16,6 @@ RUN composer install --no-interaction --no-plugins --no-scripts --no-dev --prefe
 # Copiamos el resto del código de la aplicación
 COPY . .
 
-# Creamos un archivo .env a partir del de ejemplo para que la construcción no falle
-RUN cp .env.example .env
-
-# Generamos una APP_KEY para el entorno de construcción
-RUN php artisan key:generate
-
-# Generamos los archivos optimizados (ahora sí funcionará)
-# Si usas Laravel 9+ puedes usar solo "php artisan optimize"
-RUN php artisan config:cache && \
-    php artisan route:cache && \
-    php artisan view:cache
-
 
 # --- Etapa 2: Producción ---
 # Usamos una imagen ligera de PHP-FPM con Alpine Linux
@@ -59,6 +47,15 @@ WORKDIR /var/www/html
 
 # Copiamos los archivos de la aplicación desde la etapa 'builder'
 COPY --from=builder /app .
+
+# --- Bloque Corregido ---
+# Creamos un .env temporal para que los comandos de artisan puedan ejecutarse
+RUN cp .env.example .env
+# Generamos una APP_KEY para el entorno de construcción
+RUN php artisan key:generate
+# Generamos los archivos optimizados AHORA que estamos en la ruta final
+RUN php artisan optimize
+# --- Fin del Bloque Corregido ---
 
 # Copiamos las configuraciones personalizadas de Nginx y Supervisor
 COPY docker/nginx.conf /etc/nginx/nginx.conf
