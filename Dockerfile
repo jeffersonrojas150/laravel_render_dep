@@ -54,7 +54,7 @@ RUN cp .env.example .env
 # Generamos una APP_KEY para el entorno de construcción
 RUN php artisan key:generate
 # Generamos los archivos optimizados AHORA que estamos en la ruta final
-RUN php artisan optimize
+RUN php artisan route:cache && php artisan view:cache
 # --- Fin del Bloque Corregido ---
 
 # Copiamos las configuraciones personalizadas de Nginx y Supervisor
