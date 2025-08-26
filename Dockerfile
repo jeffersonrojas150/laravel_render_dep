@@ -16,9 +16,15 @@ RUN composer install --no-interaction --no-plugins --no-scripts --no-dev --prefe
 # Copiamos el resto del código de la aplicación
 COPY . .
 
-# Generamos los archivos optimizados de Laravel
-RUN php artisan optimize:clear && \
-    php artisan config:cache && \
+# Creamos un archivo .env a partir del de ejemplo para que la construcción no falle
+RUN cp .env.example .env
+
+# Generamos una APP_KEY para el entorno de construcción
+RUN php artisan key:generate
+
+# Generamos los archivos optimizados (ahora sí funcionará)
+# Si usas Laravel 9+ puedes usar solo "php artisan optimize"
+RUN php artisan config:cache && \
     php artisan route:cache && \
     php artisan view:cache
 
