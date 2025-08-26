@@ -17,8 +17,7 @@ RUN composer install --no-interaction --no-plugins --no-scripts --no-dev --prefe
 COPY . .
 
 # Generamos los archivos optimizados de Laravel
-RUN composer run-script post-install-cmd --no-dev && \
-    php artisan optimize:clear && \
+RUN php artisan optimize:clear && \
     php artisan config:cache && \
     php artisan route:cache && \
     php artisan view:cache
